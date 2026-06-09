@@ -3,6 +3,7 @@ from pathlib import Path
 from src.engine import BattleEngine
 from src.models import Lineup, UnitType, load_heroes_from_json, load_skills_from_json
 from src.report import print_detailed_battle_report, print_simulation_dashboard
+from src.averaged_report import print_averaged_battle_report
 from src.runner import MonteCarloRunner
 
 # Resolve paths relative to this file
@@ -96,6 +97,7 @@ def main():
         runner = MonteCarloRunner(lineup_a, lineup_b, iterations=args.iterations)
         results = runner.run()
         print_simulation_dashboard(results, total_simulations=args.iterations)
+        print_averaged_battle_report(results, lineup_a, lineup_b)
     else:
         # detailed mode
         # 3. Jalankan Pertempuran
