@@ -120,7 +120,7 @@ Format object hero:
     "key": "hero_id",
     "custom_skills": ["skill_id_1", "skill_id_2"],
     "skill_overrides": {
-    "custom_1": "skill_id_lain",
+        "custom_1": "skill_id_lain",
         "custom_2": None
     }
 }
