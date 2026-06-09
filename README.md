@@ -152,7 +152,7 @@ lineup_2_config = {
             "key": "boudica",
             "custom_skills": ["fearless_retribution", "golden_odyssey"],
             # Opsional:
-          # "skill_overrides": {"custom_2": None},
+            # "skill_overrides": {"custom_2": None},
         },
         "mansa",
     ],
