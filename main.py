@@ -144,19 +144,17 @@ def main():
         "heroes": ["cyrus_the_great", "boudica", "mansa"],
         "troop_type": UnitType.PIKEMAN,
     }
+
     lineup_2_config = {
-        "heroes": [
-            "cyrus_the_great",
-            {
-                "key": "boudica",
-                "custom_skills": ["fearless_retribution", "golden_odyssey"],
-                # Optional: override slot tertentu. Nilai None berarti hapus slot.
-                # Hanya slot custom_* yang boleh dioverride.
-                # "skill_overrides": {"custom_2": None},
-            },
-            "mansa",
-        ],
-        "troop_type": UnitType.PIKEMAN,
+    "heroes": [
+        "cyrus_the_great",
+        {
+        "key": "boudica",
+        "custom_skills": ["fearless_retribution", "golden_odyssey"],
+        },
+        "mansa",
+    ],
+    "troop_type": UnitType.PIKEMAN,
     }
 
     lineup_a = build_lineup(lineup_1_config)

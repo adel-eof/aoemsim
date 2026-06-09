@@ -14,6 +14,7 @@ Project ini mendukung:
 - Tracking hasil battle: pemenang, durasi, sisa pasukan.
 - Monte Carlo runner untuk estimasi win rate yang lebih stabil.
 - Report dashboard + averaged report.
+- Export CSV hasil tiap iterasi Monte Carlo ke folder `reports/`.
 - Override skill hero per lineup tanpa mengubah database hero global.
 
 ## Kebutuhan
@@ -95,6 +96,89 @@ python main.py --mode monte-carlo --iterations 1000
 Argumen CLI:
 - `--mode`: `detailed` atau `monte-carlo` (default: `detailed`)
 - `--iterations`: bilangan bulat positif, hanya dipakai di mode `monte-carlo` (default: `1000`)
+
+## Detail Report (Update Terbaru)
+
+Bagian ini menjelaskan output report yang sekarang aktif di project.
+
+### 1) Monte Carlo Dashboard (`print_simulation_dashboard`)
+
+Dashboard menampilkan metrik ringkas lintas semua iterasi:
+- `Total Iterasi`
+- `Win Rate A` (beserta jumlah menang/kalah/seri)
+- `Lineup A (Jika Menang) rata-rata menyisakan` (survivability lineup A)
+- `Rata-rata Durasi` (plus min/max)
+- `Average DPS A` (global weighted):
+
+Formula:
+- `Average DPS A = total damage lineup A (semua iterasi) / total durasi (semua iterasi)`
+
+Catatan:
+- Fokus statistik detail sekarang diprioritaskan ke Lineup A.
+
+### 2) Detailed Battle Report (`print_detailed_battle_report`)
+
+Untuk mode `detailed`, report menampilkan:
+- Ringkasan lineup A vs B (nama hero + tipe pasukan)
+- Troop metrics kedua lineup (initial, wounded, losses, remaining)
+- Skill Lineup A dengan `Avg DPS` per skill
+- Hero breakdown Lineup A dengan kolom:
+  - `NORMAL`
+  - `MIGHT`
+  - `STRATEGY`
+  - `HEAL`
+  - `AVG DPS`
+
+`AVG DPS` pada report ini dihitung dari total damage dibagi durasi battle tersebut.
+
+### 3) Averaged Monte Carlo Detailed Report (`print_averaged_battle_report`)
+
+Untuk mode `monte-carlo`, report averaged menampilkan agregasi Lineup A:
+- Rata-rata cast skill per battle (`avg_casts`)
+- `Avg DPS` skill lintas semua iterasi
+- Breakdown hero Lineup A dalam bentuk `AVG DPS`
+
+### 4) CSV Output per Iterasi
+
+Saat menjalankan Monte Carlo, simulator membuat file:
+- `reports/simulation_iterations.csv`
+
+Kolom default:
+- `Iteration`
+- `Damage - <Hero A Slot 1>`
+- `Damage - <Hero A Slot 2>`
+- `Damage - <Hero A Slot 3>`
+- `Total Kills`
+- `Durations`
+- `Kill Ratio`
+- `Average DPS`
+
+Contoh isi file (3 baris pertama):
+
+```csv
+Iteration,Damage - Cyrus The Great,Damage - Boudica,Damage - Mansa,Total Kills,Durations,Kill Ratio,Average DPS
+1,63569,43762,29595,2768,6,2.6412,22821.00
+2,59455,42683,38907,2862,10,1.6373,14104.50
+3,52003,49153,39352,2852,9,1.6514,15612.00
+```
+
+Interpretasi kolom penting:
+- `Total Kills` = jumlah `losses` yang dialami lineup B
+- `Durations` = lama battle (detik/tick sesuai engine)
+- `Average DPS` = total damage lineup A / durasi iterasi
+- `Kill Ratio`:
+
+Formula:
+- `Kill Ratio = Total Kills / Total Deaths A`
+
+Dengan:
+- `Total Deaths A` = `losses` pada lineup A
+- `Kill Ratio > 1`: lineup A lebih efisien (membunuh lebih banyak daripada kehilangan)
+- `Kill Ratio = 1`: trade seimbang
+- `Kill Ratio < 1`: lineup A kehilangan lebih banyak daripada yang dibunuh
+
+Catatan edge case:
+- Jika `Total Deaths A = 0`, nilai `Kill Ratio` akan diisi dengan `Total Kills` (sesuai implementasi saat ini).
 
 ## Konfigurasi Lineup di main.py
 
@@ -291,6 +375,11 @@ Tujuan:
 4. Simpan hasil utama: `win rate`, `a_remaining`, `b_remaining`, `duration`.
 5. Ulangi skenario yang menjanjikan dengan 5000-10000 iterasi untuk mengurangi noise acak.
 
+Rekomendasi metrik tambahan yang sekarang tersedia:
+- `Average DPS A`
+- `Kill Ratio`
+- `Average DPS` per iterasi di file CSV
+
 ## Matrix Eksperimen (Template)
 
 Gunakan tabel ini untuk merencanakan skenario sebelum run.
@@ -320,11 +409,10 @@ Config:
 
 Result:
 - Win Rate A: xx.xx%
-- Win Rate B: xx.xx%
-- Draw: xx.xx%
 - Avg Remaining A: xxxxx
-- Avg Remaining B: xxxxx
 - Avg Duration: xx.x sec
+- Average DPS A: xxxx.xx
+- Kill Ratio (median/p50): x.xxx
 
 Conclusion:
 - Hipotesis: TERBUKTI / TIDAK TERBUKTI
@@ -389,6 +477,6 @@ Default benchmark menjalankan 1000 simulasi dan menampilkan:
 ## Pengembangan Lanjutan (Ide)
 
 - Tambah mode seed random agar hasil reproducible.
-- Tambah export hasil ke CSV/JSON.
+- Tambah export hasil ke JSON.
 - Tambah CLI argumen untuk inject lineup config dari file eksternal.
 - Tambah test khusus untuk skenario custom skill override per lineup.

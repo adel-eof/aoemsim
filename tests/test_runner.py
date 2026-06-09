@@ -1,5 +1,8 @@
 import unittest
 import sys
+import os
+import csv
+import tempfile
 from pathlib import Path
 
 # Add the src folder to sys.path so we can import modules
@@ -40,7 +43,7 @@ class TestMonteCarloRunner(unittest.TestCase):
         self.assertEqual(lineup_a.casualty_counters["remaining"], initial_remaining)
         self.assertEqual(lineup_b.casualty_counters["remaining"], initial_remaining)
         
-        runner = MonteCarloRunner(lineup_a, lineup_b, iterations=10)
+        runner = MonteCarloRunner(lineup_a, lineup_b, iterations=10, enable_csv_logging=False)
         runner.run(verbose=False)
         
         # Verify state AFTER simulation (must NOT change)
@@ -56,7 +59,7 @@ class TestMonteCarloRunner(unittest.TestCase):
         lineup_b = Lineup(heroes=heroes_b, troop_type=UnitType.PIKEMAN, troop_base_stats={"attack": 194.0, "defense": 146.0, "health": 146.0})
         
         iterations = 15
-        runner = MonteCarloRunner(lineup_a, lineup_b, iterations=iterations)
+        runner = MonteCarloRunner(lineup_a, lineup_b, iterations=iterations, enable_csv_logging=False)
         results = runner.run(verbose=False)
         
         self.assertEqual(len(results), iterations)
@@ -69,13 +72,59 @@ class TestMonteCarloRunner(unittest.TestCase):
         lineup_a = Lineup(heroes=heroes_a, troop_type=UnitType.PIKEMAN, troop_base_stats={"attack": 194.0, "defense": 146.0, "health": 146.0})
         lineup_b = Lineup(heroes=heroes_b, troop_type=UnitType.PIKEMAN, troop_base_stats={"attack": 194.0, "defense": 146.0, "health": 146.0})
         
-        runner = MonteCarloRunner(lineup_a, lineup_b, iterations=1)
+        runner = MonteCarloRunner(lineup_a, lineup_b, iterations=1, enable_csv_logging=False)
         results = runner.run(verbose=False)
         
         res = results[0]
         expected_keys = ["winner", "duration_ticks", "a_remaining", "b_remaining"]
         for key in expected_keys:
             self.assertIn(key, res)
+
+    def test_runner_writes_iteration_csv(self):
+        hero_keys = ["cyrus_the_great", "boudica", "mansa"]
+        heroes_a = [self.heroes_db[k] for k in hero_keys]
+        heroes_b = [self.heroes_db[k] for k in hero_keys]
+
+        lineup_a = Lineup(
+            heroes=heroes_a,
+            troop_type=UnitType.PIKEMAN,
+            troop_base_stats={"attack": 194.0, "defense": 146.0, "health": 146.0}
+        )
+        lineup_b = Lineup(
+            heroes=heroes_b,
+            troop_type=UnitType.PIKEMAN,
+            troop_base_stats={"attack": 194.0, "defense": 146.0, "health": 146.0}
+        )
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            previous_cwd = Path.cwd()
+            try:
+                os.chdir(tmp_dir)
+                runner = MonteCarloRunner(
+                    lineup_a,
+                    lineup_b,
+                    iterations=2,
+                    enable_csv_logging=True,
+                    output_dir="reports",
+                )
+                runner.run(verbose=False)
+            finally:
+                os.chdir(previous_cwd)
+
+            csv_path = Path(tmp_dir) / "reports" / "simulation_iterations.csv"
+            self.assertTrue(csv_path.exists())
+
+            with csv_path.open("r", newline="", encoding="utf-8") as csv_file:
+                reader = csv.DictReader(csv_file)
+                rows = list(reader)
+
+            self.assertEqual(len(rows), 2)
+            for hero_name in [hero.name for hero in lineup_a.heroes if hero is not None]:
+                self.assertIn(f"Damage - {hero_name}", reader.fieldnames)
+            self.assertIn("Total Kills", reader.fieldnames)
+            self.assertIn("Durations", reader.fieldnames)
+            self.assertIn("Kill Ratio", reader.fieldnames)
+            self.assertIn("Average DPS", reader.fieldnames)
 
 if __name__ == "__main__":
     unittest.main()
