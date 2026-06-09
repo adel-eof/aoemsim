@@ -61,6 +61,13 @@ class BattleEngine:
 
     def _safe_stat(self, lineup: Lineup, stat_name: str, fallback: float = 300.0) -> float:
         value = lineup.final_stats.get(stat_name, 0.0)
+        # Apply active stat modifiers (e.g. MIGHT, STRATEGY, ARMOR)
+        if stat_name.lower() == "might":
+            value += self._get_modifier_total(lineup, "MIGHT")
+        elif stat_name.lower() == "strategy":
+            value += self._get_modifier_total(lineup, "STRATEGY")
+        elif stat_name.lower() == "armor":
+            value += self._get_modifier_total(lineup, "ARMOR")
         return value if value > 0 else fallback
 
     def _damage_scaler(self, lineup: Lineup, dmg_type: str) -> float:
@@ -314,6 +321,10 @@ class BattleEngine:
         while self.current_tick < self.max_ticks and self.lineup_a.is_alive() and self.lineup_b.is_alive():
             self.current_tick += 1
 
+            # Update modifiers once per simulation tick (optimisasi performa)
+            self.update_modifiers(self.lineup_a)
+            self.update_modifiers(self.lineup_b)
+
             # Periodic effects are evaluated once per simulation tick.
             self._tick_dot_effects(self.lineup_a, self.lineup_b)
             self._tick_dot_effects(self.lineup_b, self.lineup_a)
@@ -334,12 +345,23 @@ class BattleEngine:
         if not target.is_alive(): return 0
         
         dmg_reduction = sum(mod["value"] for mod in target.active_modifiers if mod["attribute"] == "DAMAGE_REDUCTION")
+        # Apply MIGHT_DAMAGE_REDUCTION if dmg_type is MIGHT
+        if dmg_type == "MIGHT":
+            dmg_reduction += sum(mod["value"] for mod in target.active_modifiers if mod["attribute"] == "MIGHT_DAMAGE_REDUCTION")
+            
         dmg_reduction = min(dmg_reduction, 0.80) 
         mitigation_mult = self._mitigation_multiplier(target, dmg_type)
         final_damage = base_damage * (1.0 - dmg_reduction) * mitigation_mult
         
         troop_health = target.troop_stats.get("health", 146.0)
-        loss = calculate_troops_lost(final_damage, counter_mult, crit_mult, troop_health)
+        
+        # Apply CRIT_DAMAGE_TAKEN_REDUCTION to crit_mult
+        actual_crit_mult = crit_mult
+        if crit_mult > 1.0:
+            crit_reduction = sum(mod["value"] for mod in target.active_modifiers if mod["attribute"] == "CRIT_DAMAGE_TAKEN_REDUCTION")
+            actual_crit_mult = max(1.0, crit_mult - crit_reduction)
+            
+        loss = calculate_troops_lost(final_damage, counter_mult, actual_crit_mult, troop_health)
         loss = min(loss, target.casualty_counters["remaining"])
         
         if loss > 0:
@@ -420,6 +442,7 @@ class BattleEngine:
         
         # Tambahkan tracker hit normal attack received pada defender
         defender.combat_trackers["normal_attacks_received"] += 1
+        defender.combat_trackers["counterattack_count"] += 1
         
         for hero in defender.heroes:
             if hero is None:
@@ -450,8 +473,7 @@ class BattleEngine:
                     )
 
     def process_turn(self, attacker: Lineup, defender: Lineup, att_team: str, def_team: str):
-        self.update_modifiers(attacker)
-        self.update_modifiers(defender)
+        # update_modifiers dipindahkan ke run_simulation untuk menghindari redundansi update (2x per tick)
         
         for index in range(3):
             hero = attacker.heroes[index] if index < len(attacker.heroes) else None

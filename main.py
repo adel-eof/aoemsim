@@ -1,9 +1,12 @@
+from pathlib import Path
 from src.engine import BattleEngine
 from src.models import Lineup, UnitType, load_heroes_from_json, load_skills_from_json
 from src.report import print_detailed_battle_report
 
-SKILLS_DB = load_skills_from_json("data/skills.json")
-HEROES_DB = load_heroes_from_json("data/heroes.json", SKILLS_DB)
+# Resolve paths relative to this file
+BASE_DIR = Path(__file__).resolve().parent
+SKILLS_DB = load_skills_from_json(BASE_DIR / "data" / "skills.json")
+HEROES_DB = load_heroes_from_json(BASE_DIR / "data" / "heroes.json", SKILLS_DB)
 DEFAULT_TROOP_STATS = {"attack": 194.0, "defense": 146.0, "health": 146.0}
 
 
