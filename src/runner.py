@@ -4,10 +4,11 @@ from src.models import Lineup
 from src.engine import BattleEngine
 
 class SimulationResult(TypedDict):
-    winner: str            # "A", "B", atau "DRAW"
-    duration_ticks: int    # Detik durasi perang
-    a_remaining: int       # Sisa pasukan A
-    b_remaining: int       # Sisa pasukan B
+    winner: str
+    duration_ticks: int
+    a_remaining: int
+    b_remaining: int
+    tracker: dict
 
 class MonteCarloRunner:
     def __init__(self, lineup_a: Lineup, lineup_b: Lineup, iterations: int = 1000):
@@ -32,10 +33,11 @@ class MonteCarloRunner:
             
             # 3. Catat statistik penting dari iterasi ini
             self.results.append({
-                "winner": winner,                       # "A", "B", atau "DRAW"
-                "duration_ticks": engine.current_tick,  # Detik durasi perang
+                "winner": winner,
+                "duration_ticks": engine.current_tick,
                 "a_remaining": la.casualty_counters["remaining"],
-                "b_remaining": lb.casualty_counters["remaining"]
+                "b_remaining": lb.casualty_counters["remaining"],
+                "tracker": engine.stats_tracker
             })
 
             if verbose and ((i + 1) % log_interval == 0 or (i + 1) == self.iterations):
