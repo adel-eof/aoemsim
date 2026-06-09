@@ -1,0 +1,390 @@
+{
+  "isolated_green_vine": {
+    "name": "Isolated Green Vine",
+    "type": "Commander",
+    "activation_chance": 1.0,
+    "rage_cost": 250,
+    "effects": [
+      {
+        "type": "DAMAGE",
+        "damage_type": "MIGHT",
+        "target": "ENEMY_AREA",
+        "rate": 1.1026,
+        "target_count": 3
+      },
+      {
+        "type": "BUFF",
+        "target": "SELF",
+        "attribute": "COUNTER_CHANCE",
+        "value": 0.0298,
+        "duration": 12
+      },
+      {
+        "type": "RAGE",
+        "target": "SELF",
+        "timing": "BATTLE_START",
+        "value": 100
+      }
+    ]
+  },
+  "warriors_hymn": {
+    "name": "Warrior's Hymn",
+    "type": "Active",
+    "activation_chance": 0.30,
+    "rage_cost": 0,
+    "effects": [
+      {
+        "type": "BUFF",
+        "target": "NEXT_HERO",
+        "attribute": "MIGHT",
+        "value": 25.25,
+        "duration": 3
+      },
+      {
+        "type": "BUFF",
+        "target": "NEXT_HERO",
+        "attribute": "CRIT_CHANCE",
+        "value": 0.0404,
+        "duration": 3
+      }
+    ]
+  },
+  "conflagration": {
+    "name": "Conflagration",
+    "type": "Active",
+    "activation_chance": 0.25,
+    "rage_cost": 0,
+    "effects": [
+      {
+        "type": "DAMAGE",
+        "damage_type": "STRATEGY",
+        "target": "ENEMY_SINGLE",
+        "rate": 0.5960
+      },
+      {
+        "type": "DOT",
+        "dot_type": "BURN",
+        "target": "ENEMY_SINGLE",
+        "rate": 0.0606,
+        "duration": 6
+      }
+    ]
+  },
+  "halo_of_hwangnyong": {
+    "name": "Halo of Hwangnyong",
+    "type": "Active",
+    "activation_chance": 0.20,
+    "rage_cost": 0,
+    "effects": [
+      {
+        "type": "DAMAGE",
+        "damage_type": "STRATEGY",
+        "target": "ENEMY_SINGLE",
+        "rate": 0.4023
+      },
+      {
+        "type": "CROWD_CONTROL",
+        "status": "SILENCE",
+        "target": "ENEMY_SINGLE",
+        "chance": 0.2384,
+        "duration": 3
+      }
+    ]
+  },
+  "sawtooth_pike_mock": {
+    "name": "Sawtooth Pike (Mock)",
+    "type": "Active",
+    "activation_chance": 0.30,
+    "rage_cost": 0,
+    "effects": [
+      {
+        "type": "HEAL",
+        "target": "SELF",
+        "rate": 0.7450
+      }
+    ]
+  },
+  "ripper_tiger": {
+    "name": "Ripper Tiger",
+    "type": "Secondary Strike",
+    "activation_chance": 0.25,
+    "rage_cost": 0,
+    "effects": [
+      {
+        "type": "DAMAGE",
+        "damage_type": "MIGHT",
+        "target": "ENEMY_SINGLE",
+        "rate": 0.6464
+      }
+    ]
+  },
+  "weak_spot_attack": {
+    "name": "Weak Spot Attack",
+    "type": "Secondary Strike",
+    "activation_chance": 0.20,
+    "rage_cost": 0,
+    "effects": [
+      {
+        "type": "DAMAGE",
+        "damage_type": "MIGHT",
+        "target": "ENEMY_SINGLE",
+        "rate": 0.7474
+      }
+    ]
+  },
+  "rallying_cry": {
+    "name": "Rallying Cry",
+    "type": "Active",
+    "activation_chance": 0.35,
+    "rage_cost": 0,
+    "effects": [
+      {
+        "type": "BUFF",
+        "target": "SELF",
+        "attribute": "DAMAGE_BOOST",
+        "value": 0.20,
+        "duration": 5
+      }
+    ]
+  },
+  "shield_wall": {
+    "name": "Shield Wall",
+    "type": "Active",
+    "activation_chance": 0.30,
+    "rage_cost": 0,
+    "effects": [
+      {
+        "type": "BUFF",
+        "target": "SELF",
+        "attribute": "DAMAGE_REDUCTION",
+        "value": 0.30,
+        "duration": 5
+      }
+    ]
+  },
+  "spend_a_fortune": {
+    "name": "Spend a Fortune",
+    "type": "Commander",
+    "activation_chance": 1.0,
+    "rage_cost": 250,
+    "effects": [
+      {
+        "type": "DAMAGE",
+        "damage_type": "MIGHT",
+        "target": "ENEMY_AREA",
+        "rate": 1.6390,
+        "target_count": 2
+      },
+      {
+        "type": "RAGE",
+        "target": "SELF",
+        "timing": "BATTLE_START",
+        "value": 100
+      }
+    ]
+  },
+  "devout_radiance": {
+    "name": "Devout Radiance",
+    "type": "Passive",
+    "activation_chance": 1.0,
+    "effects": [
+      {
+        "type": "DAMAGE",
+        "damage_type": "MIGHT",
+        "target": "ENEMY_SINGLE",
+        "rate": 1.1192
+      },
+      {
+        "type": "BUFF",
+        "target": "SELF",
+        "attribute": "DAMAGE_REDUCTION",
+        "value": 0.0358,
+        "duration": 3
+      }
+    ]
+  },
+  "golden_odyssey": {
+    "name": "Golden Odyssey",
+    "type": "Passive",
+    "activation_chance": 1.0,
+    "effects": [
+      {
+        "type": "HEAL",
+        "target": "SELF",
+        "rate": 0.2626
+      },
+      {
+        "type": "BUFF",
+        "target": "SELF",
+        "attribute": "DAMAGE_BOOST",
+        "value": 0.0404,
+        "duration": 3
+      }
+    ]
+  },
+  "fearless_retribution": {
+    "name": "Fearless Retribution",
+    "type": "Passive",
+    "activation_chance": 0.20,
+    "effects": [
+      {
+        "type": "DAMAGE",
+        "damage_type": "MIGHT",
+        "target": "ENEMY_SINGLE",
+        "rate": 0.2424
+      },
+      {
+        "type": "HEAL",
+        "target": "SELF",
+        "rate": 0.0745
+      }
+    ]
+  },
+  "sawtooth_pike": {
+    "name": "Sawtooth Pike",
+    "type": "Commander",
+    "activation_chance": 1.0,
+    "rage_cost": 250,
+    "effects": [
+      {
+        "type": "DAMAGE",
+        "damage_type": "MIGHT",
+        "target": "ENEMY_AREA",
+        "rate": 1.6330,
+        "target_count": 3
+      },
+      {
+        "type": "HEAL",
+        "target": "SELF",
+        "rate": 1.1500
+      }
+    ]
+  },
+  "swift_reprisal": {
+    "name": "Swift Reprisal",
+    "type": "Passive",
+    "activation_chance": 0.20,
+    "effects": [
+      {
+        "type": "DAMAGE",
+        "damage_type": "MIGHT",
+        "target": "ENEMY_SINGLE",
+        "rate": 0.4740
+      }
+    ]
+  },
+  "king_of_the_world": {
+    "name": "King of the World",
+    "type": "Passive",
+    "activation_chance": 0.65,
+    "effects": [
+      {
+        "type": "DAMAGE",
+        "damage_type": "MIGHT",
+        "target": "ENEMY_SINGLE",
+        "rate": 0.4470,
+        "trigger": "ON_CUSTOM_SKILL_DAMAGE",
+        "cooldown": 1,
+        "exclude_dot": true,
+        "ignore_defense_chance": 0.50,
+        "ignore_defense_rate": 0.0596
+      },
+      {
+        "type": "BUFF",
+        "target": "SELF",
+        "attribute": "MIGHT",
+        "value": 14.9,
+        "duration": 3,
+        "trigger": "ON_CUSTOM_SKILL_DAMAGE"
+      },
+      {
+        "type": "BUFF",
+        "target": "SELF",
+        "attribute": "MIGHT_DAMAGE_REDUCTION",
+        "value": 0.0149,
+        "duration": 3,
+        "chance": 0.0894,
+        "trigger": "ON_RECEIVE_MIGHT_DAMAGE"
+      }
+    ]
+  },
+  "child_of_prophecy": {
+    "name": "Child of Prophecy",
+    "type": "Passive",
+    "activation_chance": 0.30,
+    "effects": [
+      {
+        "type": "DAMAGE",
+        "damage_type": "MIGHT",
+        "target": "ENEMY_SINGLE",
+        "rate": 0.2727,
+        "trigger": "ON_HIT_BY_NORMAL_ATTACK",
+        "cooldown": 1,
+        "guaranteed_critical_every": 4
+      },
+      {
+        "type": "BUFF",
+        "target": "SELF",
+        "attribute": "CRIT_DAMAGE_TAKEN_REDUCTION",
+        "value": 0.0707,
+        "duration": 3,
+        "trigger": "ON_HIT_BY_NORMAL_ATTACK"
+      }
+    ]
+  },
+  "forceful_retaliation": {
+    "name": "Forceful Retaliation",
+    "type": "Passive",
+    "activation_chance": 0.20,
+    "effects": [
+      {
+        "type": "DAMAGE",
+        "damage_type": "MIGHT",
+        "target": "ENEMY_SINGLE",
+        "rate": 0.2626,
+        "trigger": "ON_HIT_BY_NORMAL_ATTACK",
+        "cooldown": 1
+      },
+      {
+        "type": "BUFF",
+        "target": "SELF",
+        "attribute": "MIGHT",
+        "value": 8.94,
+        "duration": 6,
+        "trigger": "ON_HIT_BY_NORMAL_ATTACK"
+      }
+    ]
+  },
+  "kings_blade": {
+    "name": "King's Blade",
+    "type": "Turn-Based",
+    "activation_chance": 0.15,
+    "effects": [
+      {
+        "type": "DAMAGE",
+        "damage_type": "MIGHT",
+        "target": "ENEMY_SINGLE",
+        "rate": 0.2676,
+        "trigger": "ON_HIT_BY_NORMAL_ATTACK",
+        "cooldown": 1
+      }
+    ]
+  },
+  "whirlwind_sweep": {
+    "name": "Whirlwind Sweep",
+    "type": "Turn-Based",
+    "activation_chance": 1.0,
+    "effects": [
+      {
+        "type": "BUFF",
+        "target": "SELF",
+        "attribute": "MIGHT_DAMAGE_BOOST",
+        "value": 0.0394,
+        "duration": 999,
+        "trigger": "PERIODIC",
+        "interval": 6,
+        "max_stacks": 5
+      }
+    ]
+  }
+}

@@ -1,0 +1,150 @@
+{
+  "cyrus_the_great": {
+    "name": "Cyrus The Great",
+    "military": "Warrior",
+    "unit_types": ["Pikeman"],
+    "base_stats": {
+      "might": 110.25,
+      "armor": 85.69,
+      "strategy": 57.11,
+      "siege": 77.83
+    },
+    "growth_stats": {
+      "might": 1.07,
+      "armor": 0.86,
+      "strategy": 0.58,
+      "siege": 0.82
+    },
+    "default_skills": {
+      "commander": "isolated_green_vine",
+      "signature": "king_of_the_world"
+    },
+    "custom_skills": ["forceful_retaliation", "child_of_prophecy"]
+  },
+  "lubu": {
+    "name": "Lü Bu",
+    "military": "Warrior",
+    "unit_types": ["Cavalry"],
+    "base_stats": {
+      "might": 107.27,
+      "armor": 88.31,
+      "strategy": 55.34,
+      "siege": 56.41
+    },
+    "growth_stats": {
+      "might": 1.10,
+      "armor": 0.88,
+      "strategy": 0.50,
+      "siege": 0.66
+    },
+    "default_skills": {},
+    "custom_skills": ["ripper_tiger", "weak_spot_attack"]
+  },
+  "josephine": {
+    "name": "Josephine",
+    "military": "Tactician",
+    "unit_types": ["Archer"],
+    "base_stats": {
+      "might": 45.12,
+      "armor": 80.45,
+      "strategy": 118.50,
+      "siege": 75.00
+    },
+    "growth_stats": {
+      "might": 0.45,
+      "armor": 0.85,
+      "strategy": 1.25,
+      "siege": 0.70
+    },
+    "default_skills": {
+      "commander": "conflagration",
+      "signature": "halo_of_hwangnyong"
+    }
+  },
+  "miyamoto_musashi": {
+    "name": "Miyamoto Musashi",
+    "military": "Warrior",
+    "unit_types": ["Swordsman"],
+    "base_stats": {
+      "might": 112.50,
+      "armor": 75.20,
+      "strategy": 40.10,
+      "siege": 60.50
+    },
+    "growth_stats": {
+      "might": 1.15,
+      "armor": 0.75,
+      "strategy": 0.40,
+      "siege": 0.60
+    },
+    "default_skills": {
+      "commander": "isolated_green_vine"
+    },
+    "custom_skills": ["rallying_cry", "shield_wall"]
+  },
+  "attila": {
+    "name": "Attila the Hun",
+    "military": "Marshal",
+    "unit_types": ["Cavalry", "Archer"],
+    "base_stats": {
+      "might": 105.00,
+      "armor": 90.00,
+      "strategy": 60.00,
+      "siege": 85.00
+    },
+    "growth_stats": {
+      "might": 1.05,
+      "armor": 0.95,
+      "strategy": 0.55,
+      "siege": 0.80
+    },
+    "default_skills": {
+      "commander": "isolated_green_vine"
+    },
+    "custom_skills": ["ripper_tiger", "weak_spot_attack"]
+  },
+  "mansa": {
+    "name": "Mansa",
+    "military": "Warrior",
+    "unit_types": ["Pikeman"],
+    "base_stats": {
+      "might": 84.2,
+      "armor": 71.03,
+      "strategy": 75.69,
+      "siege": 47.45
+    },
+    "growth_stats": {
+      "might": 1.02,
+      "armor": 0.8,
+      "strategy": 0.83,
+      "siege": 0.65
+    },
+    "default_skills": {
+      "commander": "spend_a_fortune",
+      "signature": "devout_radiance"
+    },
+    "custom_skills": ["golden_odyssey", "fearless_retribution"]
+  },
+  "boudica": {
+    "name": "Boudica",
+    "military": "Warrior",
+    "unit_types": ["Pikeman"],
+    "base_stats": {
+      "might": 96.46,
+      "armor": 83.50,
+      "strategy": 67.96,
+      "siege": 67.00
+    },
+    "growth_stats": {
+      "might": 0.98,
+      "armor": 0.85,
+      "strategy": 0.69,
+      "siege": 0.68
+    },
+    "default_skills": {
+      "commander": "sawtooth_pike",
+      "signature": "swift_reprisal"
+    },
+    "custom_skills": ["forceful_retaliation", "kings_blade"]
+  }
+}
