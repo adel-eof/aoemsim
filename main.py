@@ -40,6 +40,16 @@ def format_lineup_names(lineup: Lineup) -> str:
     )
 
 
+def positive_int(value: str) -> int:
+    try:
+        ivalue = int(value)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"'{value}' is not a valid integer.")
+    if ivalue <= 0:
+        raise argparse.ArgumentTypeError(f"'{value}' must be a positive integer > 0.")
+    return ivalue
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="AOEM Battle Simulator CLI")
     parser.add_argument(
@@ -50,7 +60,7 @@ def parse_args():
     )
     parser.add_argument(
         "--iterations",
-        type=int,
+        type=positive_int,
         default=1000,
         help="Jumlah iterasi untuk simulasi Monte Carlo (default: 1000).",
     )

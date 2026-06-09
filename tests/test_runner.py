@@ -41,7 +41,7 @@ class TestMonteCarloRunner(unittest.TestCase):
         self.assertEqual(lineup_b.casualty_counters["remaining"], initial_remaining)
         
         runner = MonteCarloRunner(lineup_a, lineup_b, iterations=10)
-        runner.run()
+        runner.run(verbose=False)
         
         # Verify state AFTER simulation (must NOT change)
         self.assertEqual(lineup_a.casualty_counters["remaining"], initial_remaining, "Original Lineup A was mutated!")
@@ -52,20 +52,12 @@ class TestMonteCarloRunner(unittest.TestCase):
         heroes_a = [self.heroes_db[k] for k in hero_keys]
         heroes_b = [self.heroes_db[k] for k in hero_keys]
         
-        lineup_a = Lineup(
-            heroes=heroes_a,
-            troop_type=UnitType.PIKEMAN,
-            troop_base_stats={"attack": 194.0, "defense": 146.0, "health": 146.0}
-        )
-        lineup_b = Lineup(
-            heroes=heroes_b,
-            troop_type=UnitType.PIKEMAN,
-            troop_base_stats={"attack": 194.0, "defense": 146.0, "health": 146.0}
-        )
+        lineup_a = Lineup(heroes=heroes_a, troop_type=UnitType.PIKEMAN, troop_base_stats={"attack": 194.0, "defense": 146.0, "health": 146.0})
+        lineup_b = Lineup(heroes=heroes_b, troop_type=UnitType.PIKEMAN, troop_base_stats={"attack": 194.0, "defense": 146.0, "health": 146.0})
         
         iterations = 15
         runner = MonteCarloRunner(lineup_a, lineup_b, iterations=iterations)
-        results = runner.run()
+        results = runner.run(verbose=False)
         
         self.assertEqual(len(results), iterations)
 
@@ -74,19 +66,11 @@ class TestMonteCarloRunner(unittest.TestCase):
         heroes_a = [self.heroes_db[k] for k in hero_keys]
         heroes_b = [self.heroes_db[k] for k in hero_keys]
         
-        lineup_a = Lineup(
-            heroes=heroes_a,
-            troop_type=UnitType.PIKEMAN,
-            troop_base_stats={"attack": 194.0, "defense": 146.0, "health": 146.0}
-        )
-        lineup_b = Lineup(
-            heroes=heroes_b,
-            troop_type=UnitType.PIKEMAN,
-            troop_base_stats={"attack": 194.0, "defense": 146.0, "health": 146.0}
-        )
+        lineup_a = Lineup(heroes=heroes_a, troop_type=UnitType.PIKEMAN, troop_base_stats={"attack": 194.0, "defense": 146.0, "health": 146.0})
+        lineup_b = Lineup(heroes=heroes_b, troop_type=UnitType.PIKEMAN, troop_base_stats={"attack": 194.0, "defense": 146.0, "health": 146.0})
         
         runner = MonteCarloRunner(lineup_a, lineup_b, iterations=1)
-        results = runner.run()
+        results = runner.run(verbose=False)
         
         res = results[0]
         expected_keys = ["winner", "duration_ticks", "a_remaining", "b_remaining"]
