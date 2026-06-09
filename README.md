@@ -120,7 +120,7 @@ Format object hero:
     "key": "hero_id",
     "custom_skills": ["skill_id_1", "skill_id_2"],
     "skill_overrides": {
-        "signature": "skill_id_lain",
+    "custom_1": "skill_id_lain",
         "custom_2": None
     }
 }
@@ -129,12 +129,13 @@ Format object hero:
 Penjelasan:
 - `key`: ID hero dari `data/heroes.json`.
 - `custom_skills` (opsional): mengganti seluruh slot custom hero (`custom_1`, `custom_2`, dst) untuk hero itu di lineup ini saja.
-- `skill_overrides` (opsional): override slot spesifik.
-- Nilai `None` di `skill_overrides` artinya slot dihapus.
+- `skill_overrides` (opsional): override slot spesifik, tetapi hanya untuk slot `custom_*`.
+- Nilai `None` di `skill_overrides` artinya slot custom tersebut dihapus.
 
 Kenapa ini penting:
 - Kamu bisa test 2 lineup dengan hero yang sama, tapi kombinasi skill berbeda.
 - Override tidak memodifikasi `HEROES_DB` global, jadi aman antar lineup.
+- Skill dasar hero (`commander` dan `signature`) tidak bisa diubah karena sifatnya unik per hero.
 
 ### Contoh A/B Test Hero Sama, Skill Berbeda
 
@@ -151,7 +152,7 @@ lineup_2_config = {
             "key": "boudica",
             "custom_skills": ["fearless_retribution", "golden_odyssey"],
             # Opsional:
-            # "skill_overrides": {"signature": "king_of_the_world", "custom_2": None},
+          # "skill_overrides": {"custom_2": None},
         },
         "mansa",
     ],
@@ -217,7 +218,7 @@ lineup_2_config = {
 Tujuan:
 - Uji impact pergantian custom skill tanpa mengganti hero.
 
-### Preset 3: Swap Signature Skill
+### Preset 3: Swap Custom Skill Slot
 
 ```python
 lineup_1_config = {
@@ -229,7 +230,7 @@ lineup_2_config = {
   "heroes": [
     {
       "key": "cyrus_the_great",
-      "skill_overrides": {"signature": "swift_reprisal"},
+      "skill_overrides": {"custom_1": "whirlwind_sweep"},
     },
     "boudica",
     "mansa",
@@ -239,7 +240,7 @@ lineup_2_config = {
 ```
 
 Tujuan:
-- Uji dampak penggantian skill slot spesifik (`signature`) terhadap output battle.
+- Uji dampak penggantian skill di slot custom tertentu tanpa mengganti hero.
 
 ### Preset 4: Disable Satu Slot Skill
 
@@ -297,7 +298,7 @@ Gunakan tabel ini untuk merencanakan skenario sebelum run.
 | ID | Preset Dasar | Variabel Diubah | Nilai Perubahan | Hipotesis | Iterasi |
 | --- | --- | --- | --- | --- | --- |
 | E01 | Preset 1 | custom_skills (slot 2) | boudica: [fearless_retribution, golden_odyssey] | sustain naik, durasi naik | 1000 |
-| E02 | Preset 1 | signature (slot 1) | cyrus.signature -> swift_reprisal | burst naik, damage skill naik | 1000 |
+| E02 | Preset 1 | custom_1 (slot 1) | cyrus.custom_1 -> whirlwind_sweep | scaling damage berubah | 1000 |
 | E03 | Preset 1 | disable skill | boudica.custom_2 -> None | output turun jika skill penting | 1000 |
 | E04 | Preset 1 | troop_type | PIKEMAN -> CAVALRY | matchup berubah signifikan | 1000 |
 
@@ -374,6 +375,10 @@ Default benchmark menjalankan 1000 simulasi dan menampilkan:
 
 - Error `Skill '...' not found in database.`
   - Pastikan skill key valid di `data/skills.json`.
+
+- Error slot override tidak diperbolehkan
+  - Hanya slot `custom_*` yang bisa dioverride.
+  - Slot `commander` dan `signature` bersifat unik dasar hero dan tidak bisa diubah.
 
 - Error iterations harus positif
   - Gunakan `--iterations` > 0.

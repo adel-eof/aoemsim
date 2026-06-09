@@ -47,6 +47,11 @@ def build_hero_with_custom_skills(
 
     if skill_overrides:
         for slot, skill_key in skill_overrides.items():
+            if not slot.startswith("custom_"):
+                raise ValueError(
+                    "Hanya slot custom_* yang bisa dioverride. "
+                    f"Slot '{slot}' tidak diperbolehkan."
+                )
             if skill_key is None:
                 cloned_skills.pop(slot, None)
                 continue
@@ -146,7 +151,8 @@ def main():
                 "key": "boudica",
                 "custom_skills": ["fearless_retribution", "golden_odyssey"],
                 # Optional: override slot tertentu. Nilai None berarti hapus slot.
-                # "skill_overrides": {"signature": "king_of_the_world", "custom_2": None},
+                # Hanya slot custom_* yang boleh dioverride.
+                # "skill_overrides": {"custom_2": None},
             },
             "mansa",
         ],
