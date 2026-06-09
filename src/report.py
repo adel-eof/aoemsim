@@ -6,6 +6,11 @@ def print_simulation_dashboard(results: list, total_simulations: int):
     avg_rem_a = sum(r["a_remaining"] for r in results if r["winner"] == "A") / (wins_a or 1)
     avg_rem_b = sum(r["b_remaining"] for r in results if r["winner"] == "B") / (wins_b or 1)
     
+    durations = [r["duration_ticks"] for r in results]
+    avg_duration = sum(durations) / (len(durations) or 1)
+    max_duration = max(durations) if durations else 0
+    min_duration = min(durations) if durations else 0
+
     print("\n" + "="*70)
     print("                 ADVANCED BATTLE SIMULATION REPORT")
     print("="*70)
@@ -16,6 +21,9 @@ def print_simulation_dashboard(results: list, total_simulations: int):
     print("[TROOP SURVIVABILITY METRICS]")
     print(f"Lineup A (Jika Menang) rata-rata menyisakan : {avg_rem_a:,.0f} Pasukan")
     print(f"Lineup B (Jika Menang) rata-rata menyisakan : {avg_rem_b:,.0f} Pasukan")
+    print("-" * 70)
+    print("[BATTLE DURATION METRICS]")
+    print(f"Rata-rata Durasi : {avg_duration:.1f} detik (Min: {min_duration}s | Max: {max_duration}s)")
     print("="*70 + "\n")
 
 def print_detailed_battle_report(tracker: dict, lineup_a, lineup_b, battle_duration_seconds: int = 0):

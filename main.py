@@ -1,7 +1,9 @@
+import argparse
 from pathlib import Path
 from src.engine import BattleEngine
 from src.models import Lineup, UnitType, load_heroes_from_json, load_skills_from_json
-from src.report import print_detailed_battle_report
+from src.report import print_detailed_battle_report, print_simulation_dashboard
+from src.runner import MonteCarloRunner
 
 # Resolve paths relative to this file
 BASE_DIR = Path(__file__).resolve().parent
@@ -38,7 +40,35 @@ def format_lineup_names(lineup: Lineup) -> str:
     )
 
 
+def positive_int(value: str) -> int:
+    try:
+        ivalue = int(value)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"'{value}' is not a valid integer.")
+    if ivalue <= 0:
+        raise argparse.ArgumentTypeError(f"'{value}' must be a positive integer > 0.")
+    return ivalue
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="AOEM Battle Simulator CLI")
+    parser.add_argument(
+        "--mode",
+        choices=["detailed", "monte-carlo"],
+        default="detailed",
+        help="Mode simulasi: pertempuran detail tunggal atau analisis Win Rate massal.",
+    )
+    parser.add_argument(
+        "--iterations",
+        type=positive_int,
+        default=1000,
+        help="Jumlah iterasi untuk simulasi Monte Carlo (default: 1000).",
+    )
+    return parser.parse_args()
+
+
 def main():
+    args = parse_args()
     print("=== AOEM SIMULATOR: THE SUSTAIN META BATTLE ===")
 
     # Cukup ganti isi konfigurasi ini untuk uji lineup berbeda.
@@ -61,18 +91,25 @@ def main():
         f"{lineup_b_heroes} ({lineup_b.troop_type.value})..."
     )
 
-    # 3. Jalankan Pertempuran
-    engine = BattleEngine(lineup_a, lineup_b)
-    winner = engine.run_simulation()
+    if args.mode == "monte-carlo":
+        print(f"Executing Monte Carlo Simulation with {args.iterations} iterations...")
+        runner = MonteCarloRunner(lineup_a, lineup_b, iterations=args.iterations)
+        results = runner.run()
+        print_simulation_dashboard(results, total_simulations=args.iterations)
+    else:
+        # detailed mode
+        # 3. Jalankan Pertempuran
+        engine = BattleEngine(lineup_a, lineup_b)
+        winner = engine.run_simulation()
 
-    # 4. Tampilkan Laporan Detail Akhir
-    print_detailed_battle_report(
-        engine.stats_tracker,
-        lineup_a,
-        lineup_b,
-        battle_duration_seconds=engine.current_tick,
-    )
-    print(f"KESIMPULAN: Pemenang simulasi adalah Lineup {winner}")
+        # 4. Tampilkan Laporan Detail Akhir
+        print_detailed_battle_report(
+            engine.stats_tracker,
+            lineup_a,
+            lineup_b,
+            battle_duration_seconds=engine.current_tick,
+        )
+        print(f"KESIMPULAN: Pemenang simulasi adalah Lineup {winner}")
 
 
 if __name__ == "__main__":
