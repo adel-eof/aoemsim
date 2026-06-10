@@ -43,8 +43,13 @@ def print_detailed_battle_report(tracker: dict, lineup_a, lineup_b, battle_durat
     
     heroes_a = " | ".join([(h.name if h is not None else "(Empty Slot)") for h in lineup_a.heroes])
     heroes_b = " | ".join([(h.name if h is not None else "(Empty Slot)") for h in lineup_b.heroes])
+    
+    lineup_b_label = f"Lineup B : {heroes_b}"
+    if hasattr(lineup_b, 'template_name') and lineup_b.template_name:
+        lineup_b_label = f"Lineup B ({lineup_b.template_name}) : {heroes_b}"
+
     print(f"[ATTACKER] Lineup A : {heroes_a} ({lineup_a.troop_type.value})")
-    print(f"[DEFENDER] Lineup B : {heroes_b} ({lineup_b.troop_type.value})")
+    print(f"[DEFENDER] {lineup_b_label} ({lineup_b.troop_type.value})")
     print(f"[BATTLE DURATION]    : {battle_duration_seconds} detik")
     print("-" * 80)
     
@@ -85,3 +90,17 @@ def print_detailed_battle_report(tracker: dict, lineup_a, lineup_b, battle_durat
             total_dps = total_dmg / dps_divisor
             print(f"[A] {h_name:<16} | {norm_dps:<9,.2f} | {might_dps:<9,.2f} | {strat_dps:<9,.2f} | {heal_done:<9,d} | {total_dps:<10,.2f}")
     print("="*80 + "\n")
+
+def print_gauntlet_report(lineup_a_names: str, iterations: int, gauntlet_results: list):
+    print("=========================================================")
+    print("                 GAUNTLET MODE RESULTS")
+    print("=========================================================")
+    print(f"Team 1 Setup: {lineup_a_names}")
+    print(f"Iterations per template: {iterations}\n")
+    print(f"{'Vs Template':<28} | {'Win %':<6} | {'Lose %':<6} | {'Draw %':<6} |")
+    print("-" * 64)
+    
+    for res in gauntlet_results:
+        print(f"{res['template_name'][:28]:<28} | {res['win_p']:>5.1f}% | {res['lose_p']:>6.1f}% | {res['draw_p']:>6.1f}% |")
+    
+    print("=========================================================")
