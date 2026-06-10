@@ -1,5 +1,6 @@
 import json
 from enum import Enum
+from pathlib import Path
 from typing import List, Dict, Any, Optional
 
 class Military(Enum):
@@ -43,12 +44,13 @@ class Hero:
         return base + (growth * (level - 1))
 
 class Lineup:
-    def __init__(self, heroes: List[Optional[Hero]], troop_type: UnitType, troop_base_stats: Dict[str, float]):
+    def __init__(self, heroes: List[Optional[Hero]], troop_type: UnitType, troop_base_stats: Dict[str, float], template_name: str = None):
         if len(heroes) != 3:
             raise ValueError("Satu lineup harus berisi tepat 3 hero!")
         self.heroes = heroes  
         self.troop_type = troop_type
         self.troop_stats = troop_base_stats
+        self.template_name = template_name
         self.final_stats = {"might": 0.0, "armor": 0.0, "strategy": 0.0, "siege": 0.0}
         self.current_rage = 0
         self.casualty_counters = {
@@ -128,3 +130,12 @@ def load_heroes_from_json(json_path: str, skills_db: Dict[str, Skill]) -> Dict[s
             skills=hero_skills
         )
     return heroes_db
+
+
+def load_templates_from_json(json_path: str | Path) -> dict:
+    try:
+        with open(json_path, 'r') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        print(f"Warning: Template file not found at {json_path}")
+        return {}

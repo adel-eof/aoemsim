@@ -1,0 +1,36 @@
+{
+  "meta_sustain": {
+    "name": "Meta Sustain Heal",
+    "description": "Fokus pada pertahanan tinggi dan continuous heal.",
+    "tags": ["sustain", "defensive"],
+    "commander": {
+      "hero_key": "cyrus_the_great",
+      "custom_skills": ["shield_wall", "forceful_retaliation"]
+    },
+    "sub_commander_1": {
+      "hero_key": "mansa",
+      "custom_skills": ["devout_radiance", "spend_a_fortune"]
+    },
+    "sub_commander_2": {
+      "hero_key": "boudica",
+      "custom_skills": ["fearless_retribution", "swift_reprisal"]
+    }
+  },
+  "burst_physical": {
+    "name": "Burst Physical Damage",
+    "description": "Mengandalkan damage burst fisik di ronde-ronde awal.",
+    "tags": ["burst", "physical", "cavalry"],
+    "commander": {
+      "hero_key": "lubu",
+      "custom_skills": ["weak_spot_attack", "ripper_tiger"]
+    },
+    "sub_commander_1": {
+      "hero_key": "attila",
+      "custom_skills": ["kings_blade", "whirlwind_sweep"]
+    },
+    "sub_commander_2": {
+      "hero_key": "miyamoto_musashi",
+      "custom_skills": ["rallying_cry", "sawtooth_pike"]
+    }
+  }
+}
