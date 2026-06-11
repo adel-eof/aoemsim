@@ -37,6 +37,8 @@ class Hero:
         self.base_stats = base_stats
         self.growth_stats = growth_stats
         self.skills = skills
+        self.base_hp = 100
+        self.current_hp = 100
 
     def get_stat_at_level(self, stat_name: str, level: int = 50) -> float:
         base = self.base_stats.get(stat_name, 0.0)
@@ -72,6 +74,30 @@ class Lineup:
 
     def is_alive(self) -> bool:
         return self.casualty_counters["remaining"] > 0
+
+    def reset(self) -> None:
+        """Reset the lineup state for a new simulation iteration."""
+        for hero in self.heroes:
+            if hero is not None:
+                hero.current_hp = hero.base_hp
+        
+        self.current_rage = 0
+        self.casualty_counters = {
+            "remaining": 130000,
+            "lightly_wounded": 0,
+            "gravely_wounded": 0,
+            "losses": 0
+        }
+        self.combat_trackers = {
+            "normal_attacks_received": 0,
+            "counterattack_count": 0,
+            "critical_hits": 0
+        }
+        self.active_modifiers.clear()
+        self.active_dots.clear()
+        self.active_statuses.clear()
+        self.status_immunities.clear()
+        self.pending_charges.clear()
 
 def load_skills_from_json(json_path: str) -> Dict[str, Skill]:
     with open(json_path, 'r') as file:
