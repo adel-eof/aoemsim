@@ -5,7 +5,7 @@ from pathlib import Path
 # Add the src folder to sys.path so we can import modules
 sys.path.append(str(Path(__file__).parent.parent))
 
-from src.models import load_skills_from_json, load_heroes_from_json, UnitType, Lineup
+from src.models import GameData, UnitType, Lineup
 from src.mechanics import calculate_pre_battle_stats, get_counter_multiplier, resolve_healing
 from src.engine import BattleEngine
 
@@ -17,8 +17,10 @@ class TestAOEMSimulator(unittest.TestCase):
         cls.skills_path = str(cls.repo_root / "data" / "skills.json")
         cls.heroes_path = str(cls.repo_root / "data" / "heroes.json")
         
-        cls.skills_db = load_skills_from_json(cls.skills_path)
-        cls.heroes_db = load_heroes_from_json(cls.heroes_path, cls.skills_db)
+        cls.templates_path = str(cls.repo_root / "data" / "templates.json")
+        cls.game_data = GameData.load_from_files(cls.skills_path, cls.heroes_path, cls.templates_path)
+        cls.skills_db = cls.game_data.skills
+        cls.heroes_db = cls.game_data.heroes
 
     def test_database_loading(self):
         self.assertIn("isolated_green_vine", self.skills_db)
@@ -28,6 +30,12 @@ class TestAOEMSimulator(unittest.TestCase):
         self.assertEqual(cyrus.name, "Cyrus The Great")
         self.assertIn("commander", cyrus.skills)
         self.assertEqual(cyrus.skills["commander"].name, "Isolated Green Vine")
+
+    def test_game_data_loading(self):
+        self.assertIsInstance(self.game_data, GameData)
+        self.assertGreater(len(self.game_data.skills), 0)
+        self.assertGreater(len(self.game_data.heroes), 0)
+        self.assertGreater(len(self.game_data.templates), 0)
 
     def test_get_counter_multiplier(self):
         # Archer counters Swordsman -> 1.30
