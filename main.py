@@ -5,9 +5,7 @@ from src.models import (
     Hero,
     Lineup,
     UnitType,
-    load_heroes_from_json,
-    load_skills_from_json,
-    load_templates_from_json,
+    GameData,
 )
 from src.report import print_detailed_battle_report, print_simulation_dashboard, print_gauntlet_report
 from src.averaged_report import print_averaged_battle_report
@@ -15,23 +13,20 @@ from src.runner import MonteCarloRunner
 
 # Resolve paths relative to this file
 BASE_DIR = Path(__file__).resolve().parent
-SKILLS_DB = load_skills_from_json(BASE_DIR / "data" / "skills.json")
-HEROES_DB = load_heroes_from_json(BASE_DIR / "data" / "heroes.json", SKILLS_DB)
-TEMPLATES_DB = load_templates_from_json(BASE_DIR / "data" / "templates.json")
 DEFAULT_TROOP_STATS = {"attack": 194.0, "defense": 146.0, "health": 146.0}
 
 
-def resolve_hero_slot(hero_key: str):
+def resolve_hero_slot(hero_key: str, game_data: GameData):
     if hero_key is None:
         return None
-    hero = HEROES_DB.get(hero_key)
+    hero = game_data.heroes.get(hero_key)
     if hero is None:
         raise ValueError(f"Hero '{hero_key}' not found in database.")
     return hero
 
 
-def resolve_skill(skill_key: str):
-    skill = SKILLS_DB.get(skill_key)
+def resolve_skill(skill_key: str, game_data: GameData):
+    skill = game_data.skills.get(skill_key)
     if skill is None:
         raise ValueError(f"Skill '{skill_key}' not found in database.")
     return skill
@@ -39,11 +34,12 @@ def resolve_skill(skill_key: str):
 
 def build_hero_with_custom_skills(
     hero_key: str,
+    game_data: GameData,
     custom_skills: list[str] | None = None,
     skill_overrides: dict[str, str | None] | None = None,
 ) -> Hero:
-    base_hero = resolve_hero_slot(hero_key)
-    # Clone hero instance supaya override skill tidak mengubah HEROES_DB global.
+    base_hero = resolve_hero_slot(hero_key, game_data)
+    # Clone hero instance supaya override skill tidak mengubah game_data global.
     cloned_skills = dict(base_hero.skills)
 
     if custom_skills is not None:
@@ -51,7 +47,7 @@ def build_hero_with_custom_skills(
             slot: skill for slot, skill in cloned_skills.items() if not slot.startswith("custom_")
         }
         for index, skill_key in enumerate(custom_skills, start=1):
-            cloned_skills[f"custom_{index}"] = resolve_skill(skill_key)
+            cloned_skills[f"custom_{index}"] = resolve_skill(skill_key, game_data)
 
     if skill_overrides:
         for slot, skill_key in skill_overrides.items():
@@ -63,7 +59,7 @@ def build_hero_with_custom_skills(
             if skill_key is None:
                 cloned_skills.pop(slot, None)
                 continue
-            cloned_skills[slot] = resolve_skill(skill_key)
+            cloned_skills[slot] = resolve_skill(skill_key, game_data)
 
     return Hero(
         name=base_hero.name,
@@ -75,12 +71,12 @@ def build_hero_with_custom_skills(
     )
 
 
-def resolve_hero_config(hero_config):
+def resolve_hero_config(hero_config, game_data: GameData):
     if hero_config is None:
         return None
 
     if isinstance(hero_config, str):
-        return build_hero_with_custom_skills(hero_config)
+        return build_hero_with_custom_skills(hero_config, game_data)
 
     if isinstance(hero_config, dict):
         hero_key = hero_config.get("key")
@@ -88,6 +84,7 @@ def resolve_hero_config(hero_config):
             raise ValueError("Hero config object harus punya field 'key'.")
         return build_hero_with_custom_skills(
             hero_key,
+            game_data,
             custom_skills=hero_config.get("custom_skills"),
             skill_overrides=hero_config.get("skill_overrides"),
         )
@@ -97,12 +94,12 @@ def resolve_hero_config(hero_config):
     )
 
 
-def build_lineup(config: dict) -> Lineup:
+def build_lineup(config: dict, game_data: GameData) -> Lineup:
     hero_keys = config["heroes"]
     if len(hero_keys) != 3:
         raise ValueError("Lineup config harus berisi tepat 3 slot hero.")
 
-    heroes = [resolve_hero_config(hero_cfg) for hero_cfg in hero_keys]
+    heroes = [resolve_hero_config(hero_cfg, game_data) for hero_cfg in hero_keys]
     return Lineup(
         heroes=heroes,
         troop_type=config["troop_type"],
@@ -110,7 +107,7 @@ def build_lineup(config: dict) -> Lineup:
     )
 
 
-def build_lineup_from_template(template_data: dict) -> Lineup:
+def build_lineup_from_template(template_data: dict, game_data: GameData) -> Lineup:
     # Infer troop type from tags
     tags = [t.lower() for t in template_data.get("tags", [])]
     troop_type = UnitType.SWORDSMAN  # default
@@ -133,6 +130,7 @@ def build_lineup_from_template(template_data: dict) -> Lineup:
                 
             hero = build_hero_with_custom_skills(
                 hero_key,
+                game_data,
                 custom_skills=hero_cfg.get("custom_skills"),
             )
             heroes.append(hero)
@@ -147,12 +145,12 @@ def build_lineup_from_template(template_data: dict) -> Lineup:
     )
 
 
-def run_gauntlet_mode(lineup1: Lineup, templates_db: dict, iterations: int):
+def run_gauntlet_mode(lineup1: Lineup, game_data: GameData, iterations: int):
     results_summary = []
     hero_names = format_lineup_names(lineup1)
 
-    for key, template_data in templates_db.items():
-        lineup2 = build_lineup_from_template(template_data)
+    for key, template_data in game_data.templates.items():
+        lineup2 = build_lineup_from_template(template_data, game_data)
         # Gunakan enable_csv_logging=False agar tidak nyampah file report
         runner = MonteCarloRunner(
             lineup1, lineup2, iterations=iterations, enable_csv_logging=False
@@ -221,26 +219,32 @@ def main():
     args = parse_args()
     print("=== AOEM SIMULATOR: THE SUSTAIN META BATTLE ===")
 
+    game_data = GameData.load_from_files(
+        BASE_DIR / "data" / "skills.json",
+        BASE_DIR / "data" / "heroes.json",
+        BASE_DIR / "data" / "templates.json"
+    )
+
     # Cukup ganti isi konfigurasi ini untuk uji lineup berbeda.
     lineup_1_config = {
         "heroes": ["cyrus_the_great", "boudica", "mansa"],
         "troop_type": UnitType.PIKEMAN,
     }
-    lineup_a = build_lineup(lineup_1_config)
+    lineup_a = build_lineup(lineup_1_config, game_data)
 
     # 1. Pilih Team 2 (Template, Gauntlet, atau Manual)
     if args.run_gauntlet:
-        run_gauntlet_mode(lineup_a, TEMPLATES_DB, args.iterations)
+        run_gauntlet_mode(lineup_a, game_data, args.iterations)
         return
 
     if args.team2_template:
-        if args.team2_template not in TEMPLATES_DB:
+        if args.team2_template not in game_data.templates:
             print(
                 f"Error: Template '{args.team2_template}' tidak ditemukan di data/templates.json."
             )
             return
-        template_data = TEMPLATES_DB[args.team2_template]
-        lineup_b = build_lineup_from_template(template_data)
+        template_data = game_data.templates[args.team2_template]
+        lineup_b = build_lineup_from_template(template_data, game_data)
     else:
         # Default/Manual config for Team 2 jika tidak ada argumen template
         lineup_2_config = {
@@ -254,7 +258,7 @@ def main():
             ],
             "troop_type": UnitType.PIKEMAN,
         }
-        lineup_b = build_lineup(lineup_2_config)
+        lineup_b = build_lineup(lineup_2_config, game_data)
 
     lineup_a_heroes = format_lineup_names(lineup_a)
     lineup_b_heroes = format_lineup_names(lineup_b)

@@ -8,7 +8,7 @@ from pathlib import Path
 # Add the src folder to sys.path so we can import modules
 sys.path.append(str(Path(__file__).parent.parent))
 
-from src.models import load_skills_from_json, load_heroes_from_json, UnitType, Lineup
+from src.models import GameData, UnitType, Lineup
 from src.runner import MonteCarloRunner
 
 class TestMonteCarloRunner(unittest.TestCase):
@@ -19,8 +19,10 @@ class TestMonteCarloRunner(unittest.TestCase):
         cls.skills_path = str(cls.repo_root / "data" / "skills.json")
         cls.heroes_path = str(cls.repo_root / "data" / "heroes.json")
         
-        cls.skills_db = load_skills_from_json(cls.skills_path)
-        cls.heroes_db = load_heroes_from_json(cls.heroes_path, cls.skills_db)
+        cls.templates_path = str(cls.repo_root / "data" / "templates.json")
+        cls.game_data = GameData.load_from_files(cls.skills_path, cls.heroes_path, cls.templates_path)
+        cls.skills_db = cls.game_data.skills
+        cls.heroes_db = cls.game_data.heroes
 
     def test_runner_does_not_mutate_original_lineups(self):
         hero_keys = ["cyrus_the_great", "boudica", "mansa"]

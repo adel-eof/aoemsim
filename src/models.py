@@ -1,6 +1,7 @@
 import json
 from enum import Enum
 from pathlib import Path
+from dataclasses import dataclass
 from typing import List, Dict, Any, Optional
 
 class Military(Enum):
@@ -165,3 +166,17 @@ def load_templates_from_json(json_path: str | Path) -> dict:
     except FileNotFoundError:
         print(f"Warning: Template file not found at {json_path}")
         return {}
+
+@dataclass
+class GameData:
+    skills: Dict[str, Skill]
+    heroes: Dict[str, Hero]
+    templates: dict
+
+    @classmethod
+    def load_from_files(cls, skills_path: Path | str, heroes_path: Path | str, templates_path: Path | str) -> "GameData":
+        skills_db = load_skills_from_json(skills_path)
+        heroes_db = load_heroes_from_json(heroes_path, skills_db)
+        templates_db = load_templates_from_json(templates_path)
+        return cls(skills=skills_db, heroes=heroes_db, templates=templates_db)
+
