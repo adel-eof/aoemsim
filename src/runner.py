@@ -36,29 +36,31 @@ class MonteCarloRunner:
             self._initialize_iteration_csv()
 
         for i in range(self.iterations):
-            # 1. Salin lineup agar bersih kembali
-            la = copy.deepcopy(self.original_lineup_a)
-            lb = copy.deepcopy(self.original_lineup_b)
+            # 1. Reset lineup agar bersih kembali
+            self.original_lineup_a.reset()
+            self.original_lineup_b.reset()
             
             # 2. Inisialisasi engine dan jalankan
-            engine = BattleEngine(la, lb)
+            engine = BattleEngine(self.original_lineup_a, self.original_lineup_b)
             winner = engine.run_simulation()
             
             # 3. Catat statistik penting dari iterasi ini
             self.results.append({
                 "winner": winner,
                 "duration_ticks": engine.current_tick,
-                "a_remaining": la.casualty_counters["remaining"],
-                "b_remaining": lb.casualty_counters["remaining"],
+                "a_remaining": self.original_lineup_a.casualty_counters["remaining"],
+                "b_remaining": self.original_lineup_b.casualty_counters["remaining"],
                 "tracker": engine.stats_tracker
             })
             if self.enable_csv_logging:
-                self._append_iteration_csv_row(i + 1, la, lb, engine)
+                self._append_iteration_csv_row(i + 1, self.original_lineup_a, self.original_lineup_b, engine)
 
             if verbose and ((i + 1) % log_interval == 0 or (i + 1) == self.iterations):
                 progress = ((i + 1) / self.iterations) * 100
                 print(f"  Progress: {progress:.0f}% ({i + 1}/{self.iterations} iterasi selesai)...")
 
+        self.original_lineup_a.reset()
+        self.original_lineup_b.reset()
         return self.results
 
     def _initialize_iteration_csv(self) -> None:

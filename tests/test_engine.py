@@ -67,6 +67,28 @@ class TestAOEMSimulator(unittest.TestCase):
         self.assertEqual(lineup.casualty_counters["remaining"], 105000)
         self.assertEqual(lineup.casualty_counters["lightly_wounded"], 15000)
 
+    def test_lineup_reset(self):
+        lineup = Lineup(
+            heroes=[None, None, None],
+            troop_type=UnitType.PIKEMAN,
+            troop_base_stats={"attack": 194.0, "defense": 146.0, "health": 146.0}
+        )
+        # Modify state
+        lineup.casualty_counters["remaining"] = 50000
+        lineup.current_rage = 50
+        
+        # We need a hero to test HP reset
+        cyrus = self.heroes_db["cyrus_the_great"]
+        cyrus.current_hp = 10
+        lineup.heroes = [cyrus, None, None]
+
+        lineup.reset()
+        
+        # Verify reset
+        self.assertEqual(lineup.casualty_counters["remaining"], 130000)
+        self.assertEqual(lineup.current_rage, 0)
+        self.assertEqual(cyrus.current_hp, 100) # Should be reset to base_hp (100)
+
     def test_battle_simulation(self):
         hero_keys = ["cyrus_the_great", "boudica", "mansa"]
         heroes_a = [self.heroes_db[k] for k in hero_keys]
